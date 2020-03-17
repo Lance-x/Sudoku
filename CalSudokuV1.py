@@ -152,6 +152,11 @@ def Sole(Candidate, Sudoku):
         for i in range(9):                                      # 双重循环遍历数独中每一个位置
             for j in range(9):
                 if Sudoku[i][j] == 0:                           # 如果该位置为空
+                    if len(Candidate[i][j]) == 1:               # 如果该位置只有一个候选数
+                        Sudoku[i][j] = list(Candidate[i][j])[0]   # 写入这个唯一数
+                        Candidate[i][j].clear()                   # 清除该位置候选数
+                        Candidate = DelCan(Candidate, i, j, Sudoku[i][j])    # 调用DelCan函数，删除所在行、列、宫其它位置候选数
+                        continue                                # 处理下一个位置
                     Candi = deepcopy(Candidate[i][j])
                     # 取出该位置候选数放入Candi中（如果不取出，后面修改Candidate[i][j]后会有报错）
                     for key in Candi:                           # 依次取出候选数中的数字
@@ -172,7 +177,7 @@ def Sole(Candidate, Sudoku):
                             Sudoku[i][j] = key                  # 写入这个唯一数
                             Candidate[i][j].clear()             # 清除该位置候选数
                             Candidate = DelCan(Candidate, i, j, key)    # 调用DelCan函数，删除所在行、列、宫其它位置候选数
-                            Flag = 1                            # 如果数据发生变化，给Flag赋值，再次循环
+                            # Flag = 1                            # 如果数据发生变化，给Flag赋值，再次循环
                             break                               # 跳出本次循环，进入下一个单元格
     return Candidate, Sudoku
 
