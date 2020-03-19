@@ -7,7 +7,6 @@ Created on Mon Mar 16 17:20:56 2020.
 """
 from time import perf_counter
 from copy import deepcopy
-from re import match
 
 Tmp1 = [[0, 0, 0, 0, 0, 0, 0, 0, 0],    # 空白模板，测试用
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -71,14 +70,11 @@ def DelCan(Candidate, row: int, column: int, key: int):
     """
     MySqu = 3 * (row // 3) + column // 3            # 根据行、列计算所在宫格
     for k in range(9):                              # 每行，每列，每宫格都是9个位置，放进同一个循环中处理
-        if key in Candidate[row][k]:                # 同一行中如果存在候选数 key 则删除
-            del Candidate[row][k][key]
-        if key in Candidate[k][column]:             # 同一列中如果存在候选数 key 则删除
-            del Candidate[k][column][key]
+        Candidate[row][k].pop(key, "")              # 同一行中如果存在候选数 key 则删除
+        Candidate[k][column].pop(key, "")           # 同一列中如果存在候选数 key 则删除
         MyRow1 = 3 * (MySqu // 3) + k // 3          # 根据宫格和序列 k 计算所在行
         MyColumn1 = 3 * (MySqu % 3) + k % 3         # 根据宫格和序列 k 计算所在列
-        if key in Candidate[MyRow1][MyColumn1]:     # 同一宫中如果存在候选数 key 则删除
-            del Candidate[MyRow1][MyColumn1][key]
+        Candidate[MyRow1][MyColumn1].pop(key, "")   # 同一宫中如果存在候选数 key 则删除
     return Candidate
 
 
@@ -117,7 +113,7 @@ def Check(Candidate, Sudoku):
         for j in range(9):
             if Sudoku[i][j] == 0:                 # 如果该位置为空
                 count = count + 1                   # 统计空白位置数量
-                if len(Candidate[i][j]) == 0:       # 如果修行数数量为 0
+                if len(Candidate[i][j]) == 0:       # 如果候选数数量为 0
                     return -1                       # 空格无候选数，返回失败
             else:                                 # 如果该位置有数字
                 if Sudoku[i][j] in CheCan[0][i]:    # 如果辅助列表CheCan行中存在
@@ -228,7 +224,7 @@ def sudokuGen(text):
     for i in range(81):                 # 遍历 text 的前 81 位
         if i % 9 == 0:                  # 够一行初始化 tmp
             tmp = []                    # 过渡变量，够 9 个加入 Sudoku 中
-        if match("[1-9]", text[0]):     # 判断是不是数字，如果是
+        if "0" <= text[0] <= "9":       # 判断是不是数字，如果是
             tmp.append(eval(text[0]))   # 加入到 tmp 后面
             text = text[1:]             # 删除 text 第一位字符
         else:                           # 如果输入的不是数字
